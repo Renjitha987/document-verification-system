@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
 import pymysql
+from dotenv import load_dotenv
 
 # Install PyMySQL as MySQLdb for Django compatibility
 pymysql.install_as_MySQLdb()
 
-from dotenv import load_dotenv
+#from certificates import models
+#from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
