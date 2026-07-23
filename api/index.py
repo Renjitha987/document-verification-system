@@ -1,6 +1,9 @@
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cert_verification_portal.settings")
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "cert_verification_portal.settings"
+)
 
 from django.core.wsgi import get_wsgi_application
 
