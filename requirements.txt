@@ -146,8 +146,8 @@ python-dotenv==1.1.1
 python-json-logger==3.3.0
 python-slugify==8.0.4
 pytz==2025.2
-pywin32==311
-pywinpty==2.0.15
+#pywin32==311
+#pywinpty==2.0.15
 PyYAML==6.0.2
 pyzmq==27.0.1
 qrcode==8.2
@@ -198,7 +198,7 @@ uri-template==1.3.0
 urllib3==2.5.0
 vine==5.1.0
 virtualenv==20.35.4
-virtualenvwrapper-win==1.2.7
+#virtualenvwrapper-win==1.2.7
 wasabi==1.1.3
 wcwidth==0.2.13
 weasel==1.0.0
