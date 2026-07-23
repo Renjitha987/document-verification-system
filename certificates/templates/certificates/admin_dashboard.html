@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row gy-4 animate-fade-in-up">
+    <!-- Dashboard Header -->
+    <div class="col-12">
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Administrative Console</span>
+                <h2 class="display-font m-0"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Control Dashboard</h2>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'manage_certificates' %}" class="btn btn-premium py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                    <i class="bi bi-file-earmark-plus me-1"></i>Manage Certificates
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Row -->
+    <div class="col-md-3 col-sm-6">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-people fs-4 text-primary"></i>
+            </div>
+            <div>
+                <small class="text-secondary d-block" style="font-size: 0.75rem;">Total Students</small>
+                <span class="fs-3 fw-bold">{{ total_students }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-file-earmark-check fs-4 text-success"></i>
+            </div>
+            <div>
+                <small class="text-secondary d-block" style="font-size: 0.75rem;">Verified Certificates</small>
+                <span class="fs-3 fw-bold text-success">{{ verified_certs }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-hourglass-split fs-4 text-warning"></i>
+            </div>
+            <div>
+                <small class="text-secondary d-block" style="font-size: 0.75rem;">Pending Approvals</small>
+                <span class="fs-3 fw-bold text-warning">{{ pending_certs }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-shield-x fs-4 text-danger"></i>
+            </div>
+            <div>
+                <small class="text-secondary d-block" style="font-size: 0.75rem;">Revoked Certificates</small>
+                <span class="fs-3 fw-bold text-danger">{{ revoked_certs }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- More Stats -->
+    <div class="col-md-4 col-sm-6">
+        <div class="glass-card p-3 border d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill text-success fs-4 me-2"></i>
+                <span style="font-size: 0.85rem;">Today's Verifications</span>
+            </div>
+            <span class="fw-bold">{{ today_verifications }}</span>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+        <div class="glass-card p-3 border d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-calendar-event-fill text-primary fs-4 me-2"></i>
+                <span style="font-size: 0.85rem;">Monthly Verifications</span>
+            </div>
+            <span class="fw-bold">{{ monthly_verifications }}</span>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-12">
+        <div class="glass-card p-3 border d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-person-check-fill text-teal fs-4 me-2"></i>
+                <span style="font-size: 0.85rem;">Active Accounts</span>
+            </div>
+            <span class="fw-bold">{{ active_users }}</span>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="col-lg-8">
+        <div class="row g-4">
+            <!-- Chart 1: Monthly Issuance -->
+            <div class="col-md-6">
+                <div class="glass-card p-4 border h-100">
+                    <h5 class="display-font mb-3 text-secondary" style="font-size: 0.95rem;">Certificate Issuance Trend</h5>
+                    <canvas id="monthlyChart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+            <!-- Chart 2: Status Distribution -->
+            <div class="col-md-6">
+                <div class="glass-card p-4 border h-100">
+                    <h5 class="display-font mb-3 text-secondary" style="font-size: 0.95rem;">Status Distribution</h5>
+                    <canvas id="statusChart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+            <!-- Chart 3: Dept distribution -->
+            <div class="col-md-6">
+                <div class="glass-card p-4 border h-100">
+                    <h5 class="display-font mb-3 text-secondary" style="font-size: 0.95rem;">Certificates by Department</h5>
+                    <canvas id="deptChart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+            <!-- Chart 4: Student distribution -->
+            <div class="col-md-6">
+                <div class="glass-card p-4 border h-100">
+                    <h5 class="display-font mb-3 text-secondary" style="font-size: 0.95rem;">Students by Department</h5>
+                    <canvas id="studentChart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feeds Column -->
+    <div class="col-lg-4">
+        <div class="d-flex flex-column gap-4 h-100">
+            <!-- Feed 1: Recent Verifications -->
+            <div class="glass-card p-4 border flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="display-font m-0 text-primary" style="font-size: 0.95rem;">Recent Verification Searches</h5>
+                    <a href="{% url 'view_verification_logs' %}" style="font-size: 0.8rem; text-decoration: none;">View All</a>
+                </div>
+                <div class="d-flex flex-column gap-2 overflow-y-auto" style="max-height: 230px;">
+                    {% for log in recent_verifications %}
+                        <div class="p-2 border rounded" style="font-size: 0.8rem; background-color: var(--bg-primary); border-color: var(--border-glass) !important;">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-semibold">{{ log.searched_certificate_number }}</span>
+                                <span class="badge {% if log.status == 'SUCCESS' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}" style="font-size: 0.65rem;">
+                                    {{ log.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between text-secondary" style="font-size: 0.75rem;">
+                                <span>IP: {{ log.ip_address|default:"Anonymous" }}</span>
+                                <span>{{ log.timestamp|date:"m-d H:i" }}</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <small class="text-secondary text-center py-3">No search searches tracked.</small>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Feed 2: Recent Admin Actions -->
+            <div class="glass-card p-4 border flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="display-font m-0 text-primary" style="font-size: 0.95rem;">System Activity logs</h5>
+                    <a href="{% url 'view_audit_logs' %}" style="font-size: 0.8rem; text-decoration: none;">View All</a>
+                </div>
+                <div class="d-flex flex-column gap-2 overflow-y-auto" style="max-height: 230px;">
+                    {% for log in recent_activities %}
+                        <div class="p-2 border rounded" style="font-size: 0.8rem; background-color: var(--bg-primary); border-color: var(--border-glass) !important;">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-semibold text-primary">{{ log.user.username|default:"System" }}</span>
+                                <span class="text-secondary" style="font-size: 0.7rem;">{{ log.timestamp|date:"m-d H:i" }}</span>
+                            </div>
+                            <span class="text-secondary d-block" style="font-size: 0.75rem;">{{ log.description|truncatechars:60 }}</span>
+                        </div>
+                    {% empty %}
+                        <small class="text-secondary text-center py-3">No activity logs recorded.</small>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Monthly Issuance Chart
+    const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(ctxMonthly, {
+        type: 'line',
+        data: {
+            labels: [{% for item in monthly_certs %}'{{ item.month }}',{% endfor %}],
+            datasets: [{
+                label: 'Certificates Issued',
+                data: [{% for item in monthly_certs %}{{ item.count }},{% endfor %}],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
+        }
+    });
+
+    // 2. Status Distribution Chart
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for item in status_dist %}'{{ item.status }}',{% endfor %}],
+            datasets: [{
+                data: [{% for item in status_dist %}{{ item.count }},{% endfor %}],
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#64748b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } } }
+        }
+    });
+
+    // 3. Dept Wise Certificates Chart
+    const ctxDept = document.getElementById('deptChart').getContext('2d');
+    new Chart(ctxDept, {
+        type: 'pie',
+        data: {
+            labels: [{% for item in dept_dist %}'{{ item.department__code }}',{% endfor %}],
+            datasets: [{
+                data: [{% for item in dept_dist %}{{ item.count }},{% endfor %}],
+                backgroundColor: ['#3b82f6', '#14b8a6', '#f59e0b', '#ec4899', '#8b5cf6'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } } }
+        }
+    });
+
+    // 4. Student Distribution Chart
+    const ctxStudent = document.getElementById('studentChart').getContext('2d');
+    new Chart(ctxStudent, {
+        type: 'bar',
+        data: {
+            labels: [{% for item in student_dist %}'{{ item.department__code }}',{% endfor %}],
+            datasets: [{
+                label: 'Students Count',
+                data: [{% for item in student_dist %}{{ item.count }},{% endfor %}],
+                backgroundColor: '#14b8a6',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
+        }
+    });
+</script>
+{% endblock %}

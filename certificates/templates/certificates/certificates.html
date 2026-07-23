@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Certificates - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row gy-4 animate-fade-in-up">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Certificate Registry</span>
+                <h2 class="display-font m-0"><i class="bi bi-file-earmark-check-fill text-primary me-2"></i>Manage Certificates</h2>
+            </div>
+            <div class="d-flex gap-2">
+                <!-- Exports with current GET queries preserved -->
+                <a href="{% url 'export_certificates_excel' %}?{{ request.GET.urlencode }}" class="btn btn-outline-success py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                    <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
+                </a>
+                <a href="{% url 'export_certificates_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-outline-danger py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
+                </a>
+                <a href="{% url 'add_certificate' %}" class="btn btn-premium py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                    <i class="bi bi-file-earmark-plus me-1"></i>Add Certificate
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Panel -->
+    <div class="col-12">
+        <div class="glass-card p-4 border">
+            <h5 class="display-font mb-3"><i class="bi bi-funnel me-2 text-primary"></i>Filter Registry</h5>
+            <form method="GET" action="{% url 'manage_certificates' %}">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" name="cert_num" value="{{ filters.cert_num }}" placeholder="Certificate Number">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" name="reg_num" value="{{ filters.reg_num }}" placeholder="Register Number">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" name="student_name" value="{{ filters.student_name }}" placeholder="Student Name">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="PENDING" {% if filters.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                            <option value="APPROVED" {% if filters.status == 'APPROVED' %}selected{% endif %}>Approved / Verified</option>
+                            <option value="REJECTED" {% if filters.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                            <option value="REVOKED" {% if filters.status == 'REVOKED' %}selected{% endif %}>Revoked</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" name="department">
+                            <option value="">All Departments</option>
+                            {% for d in departments %}
+                                <option value="{{ d.id }}" {% if filters.department == d.id|stringformat:"i" %}selected{% endif %}>{{ d.code }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" name="course">
+                            <option value="">All Courses</option>
+                            {% for c in courses %}
+                                <option value="{{ c.id }}" {% if filters.course == c.id|stringformat:"i" %}selected{% endif %}>{{ c.code }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control form-control-sm" name="year" value="{{ filters.year }}" placeholder="Year (e.g. 2026)">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text" style="font-size: 0.75rem;">From</span>
+                            <input type="date" class="form-control" name="start_date" value="{{ filters.start_date }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text" style="font-size: 0.75rem;">To</span>
+                            <input type="date" class="form-control" name="end_date" value="{{ filters.end_date }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 text-end">
+                        <a href="{% url 'manage_certificates' %}" class="btn btn-sm btn-outline-secondary me-2" style="border-radius: 6px;">Reset Filter</a>
+                        <button type="submit" class="btn btn-sm btn-primary px-4" style="border-radius: 6px;"><i class="bi bi-search"></i> Apply Filters</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Table -->
+    <div class="col-12">
+        <div class="glass-card p-4 border">
+            <div class="table-responsive">
+                <table class="table align-middle" style="font-size: 0.85rem;">
+                    <thead>
+                        <tr style="border-color: var(--border-glass);">
+                            <th>Cert Number</th>
+                            <th>Reg Number</th>
+                            <th>Student Name</th>
+                            <th>Dept/Course</th>
+                            <th>Grade/CGPA</th>
+                            <th>Issue Date</th>
+                            <th>Status</th>
+                            <th class="text-center" style="width: 250px;">Status Actions</th>
+                            <th class="text-end" style="width: 150px;">CRUD Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in certificates %}
+                            <tr style="border-color: var(--border-glass);">
+                                <td class="fw-bold">{{ cert.certificate_number }}</td>
+                                <td><span class="badge bg-primary-subtle text-primary">{{ cert.student.register_number }}</span></td>
+                                <td>{{ cert.student_name_snapshot }}</td>
+                                <td>{{ cert.department.code }} - {{ cert.course.code }}</td>
+                                <td>{{ cert.grade }} / {{ cert.cgpa }}</td>
+                                <td>{{ cert.issue_date|date:"Y-m-d" }}</td>
+                                <td>
+                                    {% if cert.status == 'APPROVED' %}
+                                        <span class="badge bg-success-subtle text-success">Verified</span>
+                                    {% elif cert.status == 'PENDING' %}
+                                        <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                    {% elif cert.status == 'REJECTED' %}
+                                        <span class="badge bg-danger-subtle text-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary">Revoked</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{% url 'update_certificate_status' cert.pk 'APPROVED' %}" class="btn btn-xs btn-success py-1 px-2 text-white" style="font-size: 0.7rem; border-radius: 4px;" title="Verify / Approve">Approve</a>
+                                        <a href="{% url 'update_certificate_status' cert.pk 'REJECTED' %}" class="btn btn-xs btn-warning py-1 px-2 text-white" style="font-size: 0.7rem; border-radius: 4px;" title="Reject">Reject</a>
+                                        <a href="{% url 'update_certificate_status' cert.pk 'REVOKED' %}" class="btn btn-xs btn-danger py-1 px-2 text-white" style="font-size: 0.7rem; border-radius: 4px;" title="Revoke">Revoke</a>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <!-- Open email modal -->
+                                        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#emailModal" data-cert-id="{{ cert.id }}" data-cert-num="{{ cert.certificate_number }}" data-student-email="{{ cert.student.user.email }}" style="border-radius: 6px;" title="Email verification report">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                        <a href="{% url 'edit_certificate' cert.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'delete_certificate' cert.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete certificate record {{ cert.certificate_number }}?')" style="border-radius: 6px;" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center text-secondary py-5">No certificates match your query filters.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if certificates.has_other_pages %}
+                <nav class="mt-4" aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if certificates.has_previous %}
+                            <li class="page-item"><a class="page-item link-secondary px-3 py-2 border rounded-start text-decoration-none" href="?page={{ certificates.previous_page_number }}&{{ request.GET.urlencode }}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-item bg-primary text-white px-3 py-2 border d-inline-block">{{ certificates.number }}</span></li>
+                        {% if certificates.has_next %}
+                            <li class="page-item"><a class="page-item link-secondary px-3 py-2 border rounded-end text-decoration-none" href="?page={{ certificates.next_page_number }}&{{ request.GET.urlencode }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Email Dispatcher Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border shadow-lg" style="background-color: var(--bg-secondary); backdrop-filter: blur(20px);">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title display-font" id="emailModalLabel">Send Verification Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="emailForm" action="" method="POST">
+                {% csrf_token %}
+                <div class="modal-body py-4">
+                    <p class="text-secondary" style="font-size: 0.85rem;">
+                        This will send the verification PDF report for Certificate <strong class="text-primary" id="modal-cert-num"></strong> to the recipient address.
+                    </p>
+                    <div class="mb-3">
+                        <label for="custom_email" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Recipient Email Address</label>
+                        <input type="email" class="form-control" name="custom_email" id="modal-recipient-email" required placeholder="name@email.com" style="border-radius: 8px;">
+                        <small class="text-secondary d-block mt-1" style="font-size: 0.7rem;">Defaults to the student account email, but you can override it.</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary py-2" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 0.85rem;">Cancel</button>
+                    <button type="submit" class="btn btn-premium py-2 px-4">
+                        <i class="bi bi-send-fill me-1"></i>Email PDF Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Dynamically set modal attributes on show
+    const emailModal = document.getElementById('emailModal');
+    if (emailModal) {
+        emailModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const certId = button.getAttribute('data-cert-id');
+            const certNum = button.getAttribute('data-cert-num');
+            const defaultEmail = button.getAttribute('data-student-email');
+            
+            // Set text & inputs
+            document.getElementById('modal-cert-num').textContent = certNum;
+            document.getElementById('modal-recipient-email').value = defaultEmail;
+            
+            // Set form action URL
+            const form = document.getElementById('emailForm');
+            form.action = `/admin/certificates/${certId}/email/`;
+        });
+    }
+</script>
+{% endblock %}

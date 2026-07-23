@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Registration - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4 animate-fade-in-up">
+    <div class="col-lg-8">
+        <div class="glass-card p-5 border shadow-sm">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus-fill text-primary display-4 mb-2"></i>
+                <h2 class="display-font mt-2">Create Student Account</h2>
+                <p class="text-secondary" style="font-size: 0.85rem;">
+                    Provide your credentials and university registration details to create your secure portal profile.
+                </p>
+            </div>
+            
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <!-- section 1 -->
+                    <h5 class="display-font text-primary col-12 mb-1 mt-3">1. Portal Credentials</h5>
+                    <div class="col-md-4">
+                        <label for="username" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control border-0 bg-primary" id="username" name="username" required placeholder="Choose username" style="color: var(--text-primary); border-radius: 0 8px 8px 0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="email" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control border-0 bg-primary" id="email" name="email" required placeholder="name@domain.edu" style="color: var(--text-primary); border-radius: 0 8px 8px 0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="password" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Account Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-key"></i></span>
+                            <input type="password" class="form-control border-0 bg-primary" id="password" name="password" required placeholder="Secure password" style="color: var(--text-primary); border-radius: 0 8px 8px 0;">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4 text-secondary" style="opacity: 0.15; width: 100%;">
+                    
+                    <!-- section 2 -->
+                    <h5 class="display-font text-primary col-12 mb-1">2. Academic Profile Details</h5>
+                    <div class="col-md-6">
+                        <label for="first_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="e.g. John" style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="last_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="e.g. Doe" style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="register_number" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Register Number (Unique)</label>
+                        <input type="text" class="form-control" id="register_number" name="register_number" required placeholder="e.g. REG-2026-005" style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="department" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Department</label>
+                        <select class="form-select" id="department" name="department" required style="border-radius: 8px;">
+                            <option value="">Choose Department</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }} ({{ dept.code }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="course" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Course Code</label>
+                        <select class="form-select" id="course" name="course" required style="border-radius: 8px;">
+                            <option value="">Choose Course</option>
+                            {% for c in courses %}
+                                <option value="{{ c.id }}">{{ c.name }} ({{ c.code }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="father_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Father's Full Name</label>
+                        <input type="text" class="form-control" id="father_name" name="father_name" required placeholder="e.g. Robert Doe" style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mother_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Mother's Full Name</label>
+                        <input type="text" class="form-control" id="mother_name" name="mother_name" required placeholder="e.g. Mary Doe" style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="college_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">College Name</label>
+                        <input type="text" class="form-control" id="college_name" name="college_name" required placeholder="e.g. School of Science" style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="university_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">University Name</label>
+                        <input type="text" class="form-control" id="university_name" name="university_name" required placeholder="e.g. State University" style="border-radius: 8px;">
+                    </div>
+                    
+                    <div class="col-12 mt-4 text-end">
+                        <button type="submit" class="btn btn-premium px-5 py-3 shadow">
+                            <i class="bi bi-check2-circle me-2 fs-5"></i>Register Account
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <hr class="my-4 text-secondary" style="opacity: 0.15; width: 100%;">
+            
+            <div class="text-center">
+                <span class="text-secondary" style="font-size: 0.85rem;">Already have an account? </span>
+                <a href="{% url 'login' %}" class="fw-semibold text-decoration-none">Sign In Here</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

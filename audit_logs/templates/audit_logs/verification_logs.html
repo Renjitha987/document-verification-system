@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Verification Logs - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row gy-4 animate-fade-in-up">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">System Auditor</span>
+                <h2 class="display-font m-0"><i class="bi bi-search text-primary me-2"></i>Verification History Logs</h2>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                <i class="bi bg-transparent bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filter -->
+    <div class="col-12">
+        <div class="glass-card p-4 border">
+            <form method="GET" action="{% url 'view_verification_logs' %}">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Search by queried Certificate Number, Register Number, IP...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="status">
+                            <option value="">All Search Statuses</option>
+                            <option value="SUCCESS" {% if status_filter == 'SUCCESS' %}selected{% endif %}>Verified Successfully</option>
+                            <option value="FAILED" {% if status_filter == 'FAILED' %}selected{% endif %}>Certificate Not Found</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a href="{% url 'view_verification_logs' %}" class="btn btn-outline-secondary me-2">Reset Filter</a>
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-search"></i> Apply Filters</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Table -->
+    <div class="col-12">
+        <div class="glass-card p-4 border">
+            <div class="table-responsive">
+                <table class="table align-middle" style="font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-color: var(--border-glass);">
+                            <th style="width: 180px;">Query Timestamp</th>
+                            <th>Certificate Number Queried</th>
+                            <th>Register Number Queried</th>
+                            <th>Search Result</th>
+                            <th>IP Address</th>
+                            <th>Browser Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                            <tr style="border-color: var(--border-glass);">
+                                <td class="text-secondary fw-semibold">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                                <td class="fw-bold">{{ log.searched_certificate_number }}</td>
+                                <td><span class="badge bg-primary-subtle text-primary">{{ log.searched_register_number }}</span></td>
+                                <td>
+                                    <span class="badge {% if log.status == 'SUCCESS' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}" style="font-size: 0.75rem;">
+                                        {{ log.get_status_display }}
+                                    </span>
+                                </td>
+                                <td><code>{{ log.ip_address|default:"Anonymous" }}</code></td>
+                                <td class="text-secondary" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ log.user_agent }}">{{ log.user_agent }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-secondary py-5">No verification queries recorded.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if logs.has_other_pages %}
+                <nav class="mt-4" aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if logs.has_previous %}
+                            <li class="page-item"><a class="page-item link-secondary px-3 py-2 border rounded-start text-decoration-none" href="?page={{ logs.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-item bg-primary text-white px-3 py-2 border d-inline-block">{{ logs.number }}</span></li>
+                        {% if logs.has_next %}
+                            <li class="page-item"><a class="page-item link-secondary px-3 py-2 border rounded-end text-decoration-none" href="?page={{ logs.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

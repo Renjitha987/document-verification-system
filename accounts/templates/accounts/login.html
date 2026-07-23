@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - Smart Certificate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5 animate-fade-in-up">
+    <div class="col-md-5">
+        <div class="glass-card p-5 border shadow-sm">
+            <div class="text-center mb-4">
+                <i class="bi bi-shield-lock-fill text-primary fs-1 mb-2"></i>
+                <h3 class="display-font mt-2">Secure Portal Access</h3>
+                <p class="text-secondary" style="font-size: 0.85rem;">
+                    Sign in to manage your student profile or administrative duties.
+                </p>
+            </div>
+            
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="username" class="form-label text-secondary fw-medium" style="font-size: 0.85rem;">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control border-0 py-2 bg-primary" id="username" name="username" required placeholder="Enter Username" style="color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="password" class="form-label text-secondary fw-medium" style="font-size: 0.85rem;">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-key"></i></span>
+                        <input type="password" class="form-control border-0 py-2 bg-primary" id="password" name="password" required placeholder="Enter Password" style="color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-premium btn-lg py-3">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </div>
+            </form>
+            
+            <hr class="my-4 text-secondary" style="opacity: 0.15; width: 100%;">
+            
+            <div class="text-center">
+                <span class="text-secondary" style="font-size: 0.85rem;">New Student? </span>
+                <a href="{% url 'register' %}" class="fw-semibold text-decoration-none">Register Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Smart Certificate Portal{% endblock %}
+
+{% block content %}
+<div class="row py-5 animate-fade-in-up">
+    <div class="col-lg-8 mx-auto">
+        <div class="glass-card p-5 border">
+            <h1 class="display-5 fw-bold mb-4 display-font">About the Verification Portal</h1>
+            <p class="lead text-secondary mb-4" style="line-height: 1.6;">
+                The Smart Certificate Verification Portal is an enterprise-grade web application built to secure and automate academic and professional credential checks.
+            </p>
+            
+            <hr class="my-4" style="border-color: var(--border-glass);">
+            
+            <h4 class="display-font mb-3 mt-4 text-primary">Core Objectives</h4>
+            <ul class="text-secondary d-flex flex-column gap-2 mb-4" style="line-height: 1.6; font-size: 0.95rem;">
+                <li><strong>Eliminate Frauds:</strong> Academic credential forging causes severe reputational damage. By establishing a direct, cryptographically authenticated database search, forging becomes impossible.</li>
+                <li><strong>Automate Verification:</strong> Hiring agencies and verification companies spend weeks validating certificates manually. This system reduces verification time to milliseconds.</li>
+                <li><strong>Privacy Compliant:</strong> Student records are shared securely, utilizing unique access pairings (Certificate Number and Register Number) or encrypted APIs.</li>
+            </ul>
+            
+            <h4 class="display-font mb-3 mt-4 text-primary">Technical Architecture</h4>
+            <p class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+                The backend is built with Django 5, structured on a robust model architecture, utilizing a transactional database (MySQL/SQLite). Argon2 is utilized for maximum credential protection.
+            </p>
+            <p class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+                Every issued certificate computes a hash signature based on the student's register number, academic GPA, grades, and issue dates combined with a server salt. Modifying any cell inside the database breaks the signature, instantly indicating a compromised record.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<footer class="py-5 border-top" style="background-color: var(--bg-secondary); border-color: var(--border-glass) !important;">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-5">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-shield-check text-primary fs-3 me-2"></i>
+                    <span class="fs-4 fw-bold display-font">Smart Verify</span>
+                </div>
+                <p class="text-secondary mb-4" style="max-width: 380px; font-size: 0.9rem; leading: 1.6;">
+                    A highly secure, tamper-proof, and cryptographically verified certificate repository system. Engineered with digital signatures and QR code registries.
+                </p>
+                <p class="text-secondary m-0" style="font-size: 0.85rem;">
+                    &copy; 2026 Smart Certificate Verification System. All rights reserved.
+                </p>
+            </div>
+            
+            <div class="col-6 col-lg-3 offset-lg-1">
+                <h6 class="text-uppercase fw-bold mb-3 display-font" style="font-size: 0.85rem; letter-spacing: 1px;">Quick Navigation</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2" style="font-size: 0.9rem;">
+                    <li><a href="{% url 'home' %}" class="text-decoration-none text-secondary hover-primary">Home Portal</a></li>
+                    <li><a href="{% url 'about' %}" class="text-decoration-none text-secondary">About Platform</a></li>
+                    <li><a href="{% url 'contact' %}" class="text-decoration-none text-secondary">Contact Desk</a></li>
+                    <li><a href="{% url 'verify' %}" class="text-decoration-none text-secondary">Verify Certificates</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-6 col-lg-3">
+                <h6 class="text-uppercase fw-bold mb-3 display-font" style="font-size: 0.85rem; letter-spacing: 1px;">Security & Compliance</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2" style="font-size: 0.9rem;">
+                    <li><span class="text-secondary"><i class="bi bi-shield-lock-fill me-2 text-success"></i>Argon2 Hash Hashing</span></li>
+                    <li><span class="text-secondary"><i class="bi bi-patch-check-fill me-2 text-info"></i>Digital Signatures</span></li>
+                    <li><span class="text-secondary"><i class="bi bi-qr-code-scan me-2 text-primary"></i>QR Code Integrations</span></li>
+                    <li><span class="text-secondary"><i class="bi bi-person-check-fill me-2 text-warning"></i>Audit Action Trails</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .hover-primary:hover {
+        color: var(--accent-blue) !important;
+    }
+</style>

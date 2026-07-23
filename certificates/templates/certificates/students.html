@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Students - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row gy-4 animate-fade-in-up">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Account Configurations</span>
+                <h2 class="display-font m-0"><i class="bi bi-people text-primary me-2"></i>Student Accounts</h2>
+            </div>
+            <button type="button" class="btn btn-premium py-2 px-3" data-bs-toggle="modal" data-bs-target="#addStudentModal" style="border-radius: 8px; font-size: 0.9rem;">
+                <i class="bi bi-person-plus me-1"></i>Add Student
+            </button>
+        </div>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="col-12 col-md-6 offset-md-6">
+        <form method="GET" action="{% url 'manage_students' %}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Search by Register Number, Name, Email, Department...">
+                <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i> Search</button>
+                {% if query %}
+                    <a href="{% url 'manage_students' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Clear</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    
+    <!-- Table -->
+    <div class="col-12">
+        <div class="glass-card p-4 border">
+            <div class="table-responsive">
+                <table class="table align-middle" style="font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-color: var(--border-glass);">
+                            <th>Username</th>
+                            <th>Register Number</th>
+                            <th>Student Name</th>
+                            <th>Email Address</th>
+                            <th>Department</th>
+                            <th>Course</th>
+                            <th>Date Added</th>
+                            <th class="text-end" style="width: 180px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr style="border-color: var(--border-glass);">
+                                <td class="fw-semibold">{{ student.user.username }}</td>
+                                <td><span class="badge bg-primary-subtle text-primary">{{ student.register_number }}</span></td>
+                                <td>{{ student.user.get_full_name|default:student.user.username }}</td>
+                                <td>{{ student.user.email }}</td>
+                                <td>{{ student.department.code }}</td>
+                                <td>{{ student.course.code }}</td>
+                                <td>{{ student.created_at|date:"Y-m-d" }}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{% url 'edit_student' student.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;" title="Edit Profile">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </a>
+                                        <a href="{% url 'delete_student' student.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete student {{ student.register_number }}? All certificates and portal access will be permanently deleted.')" style="border-radius: 6px;" title="Delete Account">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary py-5">No student accounts found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if students.has_other_pages %}
+                <nav class="mt-4" aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if students.has_previous %}
+                            <li class="page-item"><a class="page-item link-secondary px-3 py-2 border rounded-start text-decoration-none" href="?page={{ students.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-item bg-primary text-white px-3 py-2 border d-inline-block">{{ students.number }}</span></li>
+                        {% if students.has_next %}
+                            <li class="page-item"><a class="page-item link-secondary px-3 py-2 border rounded-end text-decoration-none" href="?page={{ students.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card border shadow-lg" style="background-color: var(--bg-secondary); backdrop-filter: blur(20px);">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title display-font" id="addStudentModalLabel">Add Student Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'add_student' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body py-4">
+                    <div class="row g-3">
+                        <h6 class="display-font text-primary col-12 mb-0">1. Account Credentials</h6>
+                        <div class="col-md-4">
+                            <label for="username" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Username</label>
+                            <input type="text" class="form-control" name="username" required placeholder="e.g. johndoe">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Email Address</label>
+                            <input type="email" class="form-control" name="email" required placeholder="e.g. john@university.edu">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="password" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Initial Password</label>
+                            <input type="password" class="form-control" name="password" required placeholder="Create temporary pass">
+                        </div>
+                        
+                        <hr class="my-3 text-secondary" style="opacity: 0.2;">
+                        
+                        <h6 class="display-font text-primary col-12 mb-0">2. Academic Information</h6>
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">First Name</label>
+                            <input type="text" class="form-control" name="first_name" required placeholder="John">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" required placeholder="Doe">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="register_number" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Register Number</label>
+                            <input type="text" class="form-control" name="register_number" required placeholder="e.g. REG-2026-005">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="department" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Department</label>
+                            <select class="form-select" name="department" required>
+                                <option value="">Select Dept</option>
+                                {% for d in departments %}
+                                    <option value="{{ d.id }}">{{ d.code }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="course" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Course</label>
+                            <select class="form-select" name="course" required>
+                                <option value="">Select Course</option>
+                                {% for c in courses %}
+                                    <option value="{{ c.id }}">{{ c.code }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="father_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Father's Name</label>
+                            <input type="text" class="form-control" name="father_name" required placeholder="Robert Doe">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mother_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Mother's Name</label>
+                            <input type="text" class="form-control" name="mother_name" required placeholder="Mary Doe">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="college_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">College Name</label>
+                            <input type="text" class="form-control" name="college_name" required placeholder="Institute of Technology">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="university_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">University Name</label>
+                            <input type="text" class="form-control" name="university_name" required placeholder="State University">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary py-2" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 0.85rem;">Cancel</button>
+                    <button type="submit" class="btn btn-premium py-2 px-4">
+                        <i class="bi bi-check-lg me-1"></i>Provision Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

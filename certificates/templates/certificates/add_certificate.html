@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Issue Certificate - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row gy-4 justify-content-center animate-fade-in-up">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Issue Credential</span>
+                <h2 class="display-font m-0"><i class="bi bi-file-earmark-plus text-primary me-2"></i>Create Student Certificate</h2>
+            </div>
+            <a href="{% url 'manage_certificates' %}" class="btn btn-outline-secondary py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                <i class="bi bg-transparent bi-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+        
+        <!-- Form -->
+        <div class="glass-card p-5 border">
+            <form action="{% url 'add_certificate' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_certificate_number" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Certificate Number (Unique)</label>
+                        {{ form.certificate_number }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_student" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Select Student Profile</label>
+                        {{ form.student }}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="id_department" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Department</label>
+                        {{ form.department }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_course" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Course Course</label>
+                        {{ form.course }}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="id_semester" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Semester</label>
+                        {{ form.semester }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_cgpa" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">CGPA</label>
+                        {{ form.cgpa }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_grade" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Grade</label>
+                        {{ form.grade }}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="id_issue_date" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Issue Date</label>
+                        {{ form.issue_date }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_expiry_date" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Expiry Date (Optional)</label>
+                        {{ form.expiry_date }}
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <label for="id_pdf_file" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Upload Certificate PDF File</label>
+                        {{ form.pdf_file }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_status" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Initial Status</label>
+                        {{ form.status }}
+                    </div>
+                    
+                    <div class="col-12 mt-4 text-end">
+                        <button type="submit" class="btn btn-premium px-4 py-2">
+                            <i class="bi bi-file-earmark-arrow-up-fill me-2"></i>Issue Certificate
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

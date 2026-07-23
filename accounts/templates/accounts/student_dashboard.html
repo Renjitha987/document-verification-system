@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Smart Portal{% endblock %}
+
+{% block content %}
+<div class="row gy-4 animate-fade-in-up">
+    <!-- Header Banner -->
+    <div class="col-12">
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Student Dashboard</span>
+                <h2 class="display-font m-0">Welcome back, {{ user.get_full_name|default:user.username }}!</h2>
+            </div>
+            <a href="{% url 'student_profile' %}" class="btn btn-outline-secondary py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                <i class="bi bi-person-gear me-2"></i>Edit Profile Settings
+            </a>
+        </div>
+    </div>
+    
+    <!-- Stats Row -->
+    <div class="col-md-4">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 54px; height: 54px;">
+                <i class="bi bi-award fs-3 text-primary"></i>
+            </div>
+            <div>
+                <span class="text-secondary d-block" style="font-size: 0.8rem;">Total Certificates</span>
+                <span class="fs-2 fw-bold">{{ total_count }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 54px; height: 54px;">
+                <i class="bi bi-patch-check-fill fs-3 text-success"></i>
+            </div>
+            <div>
+                <span class="text-secondary d-block" style="font-size: 0.8rem;">Verified Certificates</span>
+                <span class="fs-2 fw-bold text-success">{{ verified_count }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 border h-100 d-flex align-items-center">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 54px; height: 54px;">
+                <i class="bi bi-hourglass-split fs-3 text-warning"></i>
+            </div>
+            <div>
+                <span class="text-secondary d-block" style="font-size: 0.8rem;">Pending Certificates</span>
+                <span class="fs-2 fw-bold text-warning">{{ pending_count }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile & Activity -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 border h-100">
+            <h4 class="display-font mb-3 text-primary">My Profile</h4>
+            <div class="text-center py-3 border-bottom mb-3" style="border-color: var(--border-glass) !important;">
+                <div class="bg-primary text-secondary rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto mb-2" style="width: 70px; height: 70px; font-size: 1.5rem;">
+                    {{ user.username|slice:":2"|upper }}
+                </div>
+                <h5 class="m-0 fw-semibold">{{ user.get_full_name|default:user.username }}</h5>
+                <small class="text-secondary">{{ profile.register_number }}</small>
+            </div>
+            
+            <ul class="list-unstyled d-flex flex-column gap-2 mb-0" style="font-size: 0.85rem;">
+                <li class="d-flex justify-content-between"><span class="text-secondary">Course:</span> <span>{{ profile.course.code }}</span></li>
+                <li class="d-flex justify-content-between"><span class="text-secondary">Department:</span> <span>{{ profile.department.code }}</span></li>
+                <li class="d-flex justify-content-between"><span class="text-secondary">Email Address:</span> <span>{{ user.email }}</span></li>
+                <li class="d-flex justify-content-between"><span class="text-secondary">College:</span> <span>{{ profile.college_name }}</span></li>
+                <li class="d-flex justify-content-between"><span class="text-secondary">University:</span> <span>{{ profile.university_name }}</span></li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Certificates List -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4 border h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="display-font m-0 text-primary">My Issued Certificates</h4>
+                <a href="{% url 'student_certificates' %}" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;">View All</a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table align-middle" style="font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-color: var(--border-glass);">
+                            <th>Certificate Number</th>
+                            <th>Semester</th>
+                            <th>Grade/CGPA</th>
+                            <th>Issue Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in certificates|slice:":5" %}
+                            <tr style="border-color: var(--border-glass);">
+                                <td class="fw-semibold">{{ cert.certificate_number }}</td>
+                                <td>{{ cert.semester }}</td>
+                                <td>{{ cert.grade }} / {{ cert.cgpa }}</td>
+                                <td>{{ cert.issue_date|date:"Y-m-d" }}</td>
+                                <td>
+                                    {% if cert.status == 'APPROVED' %}
+                                        <span class="badge bg-success-subtle text-success">Verified</span>
+                                    {% elif cert.status == 'PENDING' %}
+                                        <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                    {% elif cert.status == 'REJECTED' %}
+                                        <span class="badge bg-danger-subtle text-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary">Revoked</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'verify' %}?certificate_number={{ cert.certificate_number }}&register_number={{ profile.register_number }}" class="btn btn-sm btn-outline-info" title="View details" style="border-radius: 6px;">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if cert.status == 'APPROVED' %}
+                                            <a href="{% url 'download_verification_report' cert.id %}" class="btn btn-sm btn-outline-success" title="Download report" style="border-radius: 6px;">
+                                                <i class="bi bi-file-earmark-pdf"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-secondary py-4">No certificates issued yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

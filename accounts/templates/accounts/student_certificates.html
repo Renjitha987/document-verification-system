@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}My Certificates - Smart Portal{% endblock %}
+
+{% block content %}
+<div class="row gy-4 animate-fade-in-up">
+    <div class="col-12">
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Credentials Repository</span>
+                <h2 class="display-font m-0"><i class="bi bi-award-fill text-primary me-2"></i>My Issued Certificates</h2>
+            </div>
+            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-12">
+        <div class="glass-card p-4 border">
+            <div class="table-responsive">
+                <table class="table align-middle" style="font-size: 0.95rem;">
+                    <thead>
+                        <tr style="border-color: var(--border-glass);">
+                            <th>Certificate Number</th>
+                            <th>Semester</th>
+                            <th>CGPA</th>
+                            <th>Grade</th>
+                            <th>Issue Date</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in certificates %}
+                            <tr style="border-color: var(--border-glass);">
+                                <td class="fw-bold">{{ cert.certificate_number }}</td>
+                                <td>{{ cert.semester }}</td>
+                                <td>{{ cert.cgpa }}</td>
+                                <td><span class="badge bg-primary-subtle text-primary">{{ cert.grade }}</span></td>
+                                <td>{{ cert.issue_date|date:"Y-m-d" }}</td>
+                                <td>{{ cert.expiry_date|date:"Y-m-d"|default:"-" }}</td>
+                                <td>
+                                    {% if cert.status == 'APPROVED' %}
+                                        <span class="badge bg-success-subtle text-success">Verified</span>
+                                    {% elif cert.status == 'PENDING' %}
+                                        <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                    {% elif cert.status == 'REJECTED' %}
+                                        <span class="badge bg-danger-subtle text-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary">Revoked</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'verify' %}?certificate_number={{ cert.certificate_number }}&register_number={{ cert.student.register_number }}" class="btn btn-sm btn-outline-info" title="View Verification Page" style="border-radius: 6px;">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                        {% if cert.status == 'APPROVED' %}
+                                            <a href="{% url 'download_verification_report' cert.id %}" class="btn btn-sm btn-outline-success" title="Download Report PDF" style="border-radius: 6px;">
+                                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary py-5">No certificate records found for your registration registry.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

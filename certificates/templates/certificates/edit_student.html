@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Student - Smart Verify{% endblock %}
+
+{% block content %}
+<div class="row gy-4 justify-content-center animate-fade-in-up">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="glass-card p-4 border d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <span class="text-secondary" style="font-size: 0.85rem;">Modify Student Info</span>
+                <h2 class="display-font m-0"><i class="bi bi-person-gear text-primary me-2"></i>Edit Student Profile</h2>
+            </div>
+            <a href="{% url 'manage_students' %}" class="btn btn-outline-secondary py-2 px-3" style="border-radius: 8px; font-size: 0.9rem;">
+                <i class="bi bg-transparent bi-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+        
+        <!-- Form -->
+        <div class="glass-card p-5 border">
+            <form action="{% url 'edit_student' profile.pk %}" method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <h6 class="display-font text-primary col-12 mb-0">1. Account Information</h6>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Username</label>
+                        <input type="text" class="form-control bg-primary border-0" value="{{ profile.user.username }}" readonly style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Email Address</label>
+                        <input type="email" class="form-control" name="email" value="{{ profile.user.email }}" required style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-12">
+                        <label for="password" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Reset Password</label>
+                        <input type="password" class="form-control" name="password" placeholder="Leave blank to keep current password" style="border-radius: 8px;">
+                    </div>
+                    
+                    <hr class="my-4" style="border-color: var(--border-glass);">
+                    
+                    <h6 class="display-font text-primary col-12 mb-0">2. Profile Information</h6>
+                    <div class="col-md-6">
+                        <label for="first_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">First Name</label>
+                        <input type="text" class="form-control" name="first_name" value="{{ profile.user.first_name }}" required style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="last_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" value="{{ profile.user.last_name }}" required style="border-radius: 8px;">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Register Number</label>
+                        <input type="text" class="form-control bg-primary border-0" value="{{ profile.register_number }}" readonly style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="department" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Department</label>
+                        <select class="form-select" name="department" required style="border-radius: 8px;">
+                            {% for d in departments %}
+                                <option value="{{ d.id }}" {% if profile.department.id == d.id %}selected{% endif %}>{{ d.code }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="course" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Course</label>
+                        <select class="form-select" name="course" required style="border-radius: 8px;">
+                            {% for c in courses %}
+                                <option value="{{ c.id }}" {% if profile.course.id == c.id %}selected{% endif %}>{{ c.code }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="father_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Father's Name</label>
+                        <input type="text" class="form-control" name="father_name" value="{{ profile.father_name }}" required style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mother_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">Mother's Name</label>
+                        <input type="text" class="form-control" name="mother_name" value="{{ profile.mother_name }}" required style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="college_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">College Name</label>
+                        <input type="text" class="form-control" name="college_name" value="{{ profile.college_name }}" required style="border-radius: 8px;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="university_name" class="form-label text-secondary fw-semibold mb-1" style="font-size: 0.8rem;">University Name</label>
+                        <input type="text" class="form-control" name="university_name" value="{{ profile.university_name }}" required style="border-radius: 8px;">
+                    </div>
+                    
+                    <div class="col-12 mt-4 text-end">
+                        <button type="submit" class="btn btn-premium px-4 py-2">
+                            <i class="bi bi-save-fill me-2"></i>Save Student Profile
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

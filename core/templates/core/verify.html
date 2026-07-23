@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Credentials - Smart Certificate Portal{% endblock %}
+
+{% block content %}
+<div class="row py-4 justify-content-center animate-fade-in-up">
+    <!-- Verification Form Card -->
+    <div class="col-lg-6 mb-5">
+        <div class="glass-card p-5 border shadow-sm">
+            <div class="text-center mb-4">
+                <i class="bi bi-patch-check text-primary fs-1 mb-2"></i>
+                <h2 class="display-font mt-2">Credential Verification Desk</h2>
+                <p class="text-secondary" style="font-size: 0.9rem;">
+                    Enter the Certificate Number and Student Register Number below to verify legitimacy.
+                </p>
+            </div>
+            
+            <form method="GET" action="{% url 'verify' %}">
+                <div class="mb-4">
+                    <label for="cert-verify-num" class="form-label text-secondary fw-medium" style="font-size: 0.85rem;">Certificate Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-file-earmark-lock"></i></span>
+                        <input type="text" class="form-control border-0 py-2 bg-primary" id="cert-verify-num" name="certificate_number" value="{{ certificate_number|default:'' }}" required placeholder="e.g. CERT-2026-F89A" style="color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="cert-reg-num" class="form-label text-secondary fw-medium" style="font-size: 0.85rem;">Register Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-secondary border-0"><i class="bi bi-person-badge"></i></span>
+                        <input type="text" class="form-control border-0 py-2 bg-primary" id="cert-reg-num" name="register_number" value="{{ register_number|default:'' }}" required placeholder="e.g. REG-2026-001" style="color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div class="d-grid mt-4">
+                    <button type="submit" id="btn-verify-submit" class="btn btn-premium btn-lg py-3">
+                        <i class="bi bi-shield-fill-check me-2"></i>Verify Credential
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Verification Results Section -->
+    {% if searched %}
+        <div class="col-12 mt-2" id="verification-result-container">
+            {% if certificate %}
+                <!-- SUCCESS CARD (VERIFIED) -->
+                <div class="glass-card border-success shadow-lg p-5 mx-auto animate-fade-in-up" id="verification-result-success" style="max-width: 800px; border-width: 2px !important; border-color: rgba(16, 185, 129, 0.4) !important;">
+                    <div class="text-center mb-5 position-relative">
+                        <!-- Animated Green Check -->
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mx-auto pulse-effect" style="width: 80px; height: 80px;">
+                            <i class="bi bi-patch-check-fill fs-1"></i>
+                        </div>
+                        <h2 class="display-font text-success mt-4">Certificate Verified</h2>
+                        <span class="badge bg-success-subtle text-success border border-success px-3 py-2 mt-2" style="font-size: 0.9rem;">
+                            Live Registry Record Confirmed
+                        </span>
+                    </div>
+                    
+                    <div class="row gy-4">
+                        <div class="col-md-7">
+                            <h4 class="display-font border-bottom pb-2 mb-3 text-secondary" style="font-size: 1.1rem;">Academic Credentials</h4>
+                            
+                            <table class="table table-borderless align-middle" style="font-size: 0.95rem;">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1" style="width: 150px;">Student Name:</td>
+                                        <td class="fw-bold py-1">{{ certificate.student_name_snapshot }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">Register Number:</td>
+                                        <td class="fw-semibold py-1">{{ certificate.student.register_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">Course Name:</td>
+                                        <td class="py-1">{{ certificate.course.name }} ({{ certificate.course.code }})</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">Department:</td>
+                                        <td class="py-1">{{ certificate.department.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">CGPA / Grade:</td>
+                                        <td class="fw-bold text-primary py-1">{{ certificate.cgpa }} / {{ certificate.grade }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">Semester:</td>
+                                        <td class="py-1">{{ certificate.semester }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">College Name:</td>
+                                        <td class="py-1">{{ certificate.student.college_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">University Name:</td>
+                                        <td class="py-1">{{ certificate.student.university_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary ps-0 py-1">Issuance Date:</td>
+                                        <td class="py-1">{{ certificate.issue_date|date:"Y-m-d" }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-5 text-center d-flex flex-column align-items-center justify-content-center border-start" style="border-color: var(--border-glass) !important;">
+                            <div class="p-3 bg-white border rounded shadow-sm mb-3">
+                                {% if certificate.qr_code_image %}
+                                    <img src="{{ certificate.qr_code_image.url }}" alt="Verification QR Code" style="width: 140px; height: 140px;">
+                                {% else %}
+                                    <i class="bi bi-qr-code fs-1 text-secondary"></i>
+                                {% endif %}
+                            </div>
+                            <small class="text-secondary d-block mb-3 px-3">Scan this QR code to verify this certificate on any mobile device.</small>
+                            
+                            <a href="{% url 'download_verification_report' certificate.id %}" id="btn-download-pdf" class="btn btn-success d-flex align-items-center justify-content-center py-2 px-4 shadow-sm w-100" style="border-radius: 8px;">
+                                <i class="bi bi-file-earmark-pdf-fill me-2 fs-5"></i>Download Report PDF
+                            </a>
+                        </div>
+                        
+                        <!-- Signature Hash -->
+                        <div class="col-12 mt-4">
+                            <div class="p-3 border rounded" style="background-color: var(--bg-primary); border-color: var(--border-glass) !important;">
+                                <small class="text-secondary d-block fw-semibold mb-1" style="font-size: 0.75rem;">Cryptographic Digital Signature Hash (SHA-256)</small>
+                                <code class="text-break" style="font-size: 0.85rem; color: var(--accent-teal);">{{ certificate.digital_signature }}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- FAILURE CARD (NOT FOUND) -->
+                <div class="glass-card border-danger shadow-lg p-5 mx-auto animate-fade-in-up" id="verification-result-failed" style="max-width: 600px; border-width: 2px !important; border-color: rgba(239, 68, 68, 0.4) !important;">
+                    <div class="text-center">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <i class="bi bi-shield-x fs-1"></i>
+                        </div>
+                        <h2 class="display-font text-danger mb-3">Certificate Not Found</h2>
+                        <p class="text-secondary mb-4 px-4" style="font-size: 0.95rem; line-height: 1.6;">
+                            We were unable to locate any approved credential matching the Certificate Number and Register Number entered. Please check that you entered them correctly or contact support.
+                        </p>
+                        
+                        <div class="p-3 border rounded text-start mb-4" style="background-color: var(--bg-primary); border-color: var(--border-glass) !important; font-size: 0.85rem;">
+                            <span class="text-secondary d-block fw-semibold mb-1">Search details:</span>
+                            <span class="text-secondary d-block">Certificate Number queried: <strong style="color: var(--text-primary);">{{ certificate_number }}</strong></span>
+                            <span class="text-secondary d-block">Register Number queried: <strong style="color: var(--text-primary);">{{ register_number }}</strong></span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'verify' %}" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 8px;">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Try Again
+                            </a>
+                            <a href="{% url 'contact' %}" class="btn btn-danger px-4 py-2" style="border-radius: 8px;">
+                                <i class="bi bi-envelope me-2"></i>Contact Admin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
