@@ -22,13 +22,35 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this-in
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv(
-        "ALLOWED_HOSTS",
-        "127.0.0.1,localhost,.vercel.app,.onrender.com"
-    ).split(",")
+# ALLOWED_HOSTS = [
+#     h.strip()
+#     for h in os.getenv(
+#         "ALLOWED_HOSTS",
+#         "127.0.0.1,localhost,.vercel.app,.onrender.com"
+#     ).split(",")
+# ]
+
+# Temporary for testing
+ALLOWED_HOSTS = ["*"]
+
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://document-verification-system-ietm.onrender.com",
+# ]
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://*.onrender.com",
+# ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://document-verification-system-ietm.onrender.com",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 # Application definition
 
 INSTALLED_APPS = [
