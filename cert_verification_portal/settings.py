@@ -20,18 +20,15 @@ load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this-in-env')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-#ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')]
 ALLOWED_HOSTS = [
     h.strip()
     for h in os.getenv(
         "ALLOWED_HOSTS",
-        #"127.0.0.1,localhost,.vercel.app,.onrender.com"
-        .onrender.com,localhost,127.0.0.1
+        "127.0.0.1,localhost,.vercel.app,.onrender.com"
     ).split(",")
 ]
-
 # Application definition
 
 INSTALLED_APPS = [
