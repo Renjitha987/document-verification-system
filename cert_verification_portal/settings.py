@@ -27,7 +27,8 @@ ALLOWED_HOSTS = [
     h.strip()
     for h in os.getenv(
         "ALLOWED_HOSTS",
-        "127.0.0.1,localhost,.vercel.app,.onrender.com"
+        #"127.0.0.1,localhost,.vercel.app,.onrender.com"
+        .onrender.com,localhost,127.0.0.1
     ).split(",")
 ]
 
