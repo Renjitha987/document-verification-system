@@ -1,0 +1,44 @@
+/* Custom Portal Stylesheet */
+
+/* Gradient text utility */
+.text-gradient {
+    background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Extra card styles */
+.glass-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Transition speed adjustments */
+.transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom badges */
+.badge-verified {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-pending {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-revoked {
+    background-color: rgba(100, 116, 139, 0.15) !important;
+    color: #64748b !important;
+    border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.badge-rejected {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
